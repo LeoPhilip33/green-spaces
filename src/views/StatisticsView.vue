@@ -13,8 +13,8 @@ export default {
   },
   data() {
     return {
-      loading: false,
-      geojsonData: null,
+      loading: false as boolean,
+      geojsonData: null as GeoJSON.FeatureCollection | null,
       statistics: {
         totalParks: 0,
         totalGardens: 0,
@@ -26,7 +26,7 @@ export default {
         percentageDeciduous: 0,
         percentageBroadleaved: 0,
         percentageNeedleleaved: 0,
-      },
+      } as Statistics,
     };
   },
   computed: {

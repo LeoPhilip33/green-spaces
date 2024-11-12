@@ -7,6 +7,7 @@ import { COLORS } from '@/utils/colors';
 import { FILTERS } from '@/utils/filters';
 import simplify from 'simplify-js';
 import Loader from '@/components/LoaderComponent.vue';
+import Filters from '@/utils/filters';
 
 export default {
   name: 'HomeView',
@@ -16,7 +17,7 @@ export default {
   },
   data() {
     return {
-      loading: true,
+      loading: true as boolean,
       filters: {
         parks: false,
         gardens: false,
@@ -29,10 +30,10 @@ export default {
         broadleaved: false,
         needleleaved: false,
         heatzones: false,
-      },
+      } as Filters,
       colors: COLORS,
-      geojsonData: null,
-      map: null,
+      geojsonData: null as GeoJSON.FeatureCollection | null,
+      map: null as mapboxgl.Map | null,
     };
   },
   mounted() {
