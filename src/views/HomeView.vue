@@ -8,6 +8,7 @@ import { FILTERS } from '@/utils/filters';
 import simplify from 'simplify-js';
 import Loader from '@/components/LoaderComponent.vue';
 import Filters from '@/utils/filters';
+import { GreenSpaces } from '@/enums/GreenSpaces';
 
 export default {
   name: 'HomeView',
@@ -17,6 +18,7 @@ export default {
   },
   data() {
     return {
+      greenSpaces: GreenSpaces,
       loading: true as boolean,
       filters: {
         parks: false,
@@ -286,29 +288,29 @@ export default {
     <div class="position-relative">
       <div class="position-absolute z-1 top-0 start-0 p-3">
         <div class="d-flex flex-wrap gap-2">
-          <FilterComponent :filterName="'Parcs'" :color="colors.parks" :icon="'bi bi-bounding-box'"
+          <FilterComponent :filterName="greenSpaces.Parks" :color="colors.parks" :icon="'bi bi-bounding-box'"
             v-model="filters.parks" @change="updateMapLayers" />
-          <FilterComponent :filterName="'Jardins'" :color="colors.gardens" :icon="'bi bi-flower1'"
+          <FilterComponent :filterName="greenSpaces.Gardens" :color="colors.gardens" :icon="'bi bi-flower1'"
             v-model="filters.gardens" @change="updateMapLayers" />
-          <FilterComponent :filterName="'Aires de jeux'" :color="colors.playgrounds" :icon="'bi bi-dice-1-fill'"
+          <FilterComponent :filterName="greenSpaces.Playgrounds" :color="colors.playgrounds" :icon="'bi bi-dice-1-fill'"
             v-model="filters.playgrounds" @change="updateMapLayers" />
-          <FilterComponent :filterName="'Emplacements'" :color="colors.pitches" :icon="'bi bi-geo-alt-fill'"
+          <FilterComponent :filterName="greenSpaces.Pitches" :color="colors.pitches" :icon="'bi bi-geo-alt-fill'"
             v-model="filters.pitches" @change="updateMapLayers" />
-          <FilterComponent :filterName="'Forêts'" :color="colors.forests" :icon="'bi bi-signpost-2-fill'"
+          <FilterComponent :filterName="greenSpaces.Forests" :color="colors.forests" :icon="'bi bi-signpost-2-fill'"
             v-model="filters.forests" @change="updateMapLayers" />
-          <FilterComponent :filterName="'Bois'" :color="colors.woods" :icon="'bi bi-signpost-fill'"
+          <FilterComponent :filterName="greenSpaces.Woods" :color="colors.woods" :icon="'bi bi-signpost-fill'"
             v-model="filters.woods" @change="updateMapLayers" />
-          <FilterComponent :filterName="'Carte thermique'" :color="colors.heatzones" :icon="'bi bi-thermometer-half'"
+          <FilterComponent :filterName="greenSpaces.HeatMap" :color="colors.heatzones" :icon="'bi bi-thermometer-half'"
             v-model="filters.heatzones" @change="updateMapLayers" />
           <div>
-            <FilterComponent :filterName="'Arbres'" :color="colors.trees" :icon="'bi bi-tree-fill'"
+            <FilterComponent :filterName="greenSpaces.Trees" :color="colors.trees" :icon="'bi bi-tree-fill'"
               v-model="filters.trees" @change="updateMapLayers" />
             <div v-if="filters.trees" class="ms-2 mt-2 d-flex flex-column gap-1">
-              <FilterComponent :filterName="'Arbres à feuilles caduques'" :color="colors.deciduous"
+              <FilterComponent :filterName="greenSpaces.DeciduousTrees" :color="colors.deciduous"
                 v-model="filters.deciduous" @change="updateMapLayers" />
-              <FilterComponent :filterName="'Arbres à feuilles larges'" :color="colors.broadleaved"
+              <FilterComponent :filterName="greenSpaces.BroadleavedTrees" :color="colors.broadleaved"
                 v-model="filters.broadleaved" @change="updateMapLayers" />
-              <FilterComponent :filterName="'Arbres à feuilles d\'aiguilles'" :color="colors.needleleaved"
+              <FilterComponent :filterName="greenSpaces.NeedleleavedTrees" :color="colors.needleleaved"
                 v-model="filters.needleleaved" @change="updateMapLayers" />
             </div>
           </div>

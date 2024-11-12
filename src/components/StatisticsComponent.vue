@@ -1,6 +1,7 @@
 <script lang="ts">
 import { Chart, registerables } from 'chart.js';
 import { COLORS } from '@/utils/colors';
+import { GreenSpaces } from '@/enums/GreenSpaces';
 
 Chart.register(...registerables);
 
@@ -39,7 +40,7 @@ export default {
         this.chart = new Chart(ctx, {
           type: 'doughnut',
           data: {
-            labels: ['Parcs', 'Jardins', 'Aires de jeux', 'Terrains', 'Forêts', 'Bois', 'Arbres'],
+            labels: [GreenSpaces.Parks, GreenSpaces.Gardens, GreenSpaces.Playgrounds, GreenSpaces.Pitches, GreenSpaces.Forests, GreenSpaces.Woods, GreenSpaces.Trees],
             datasets: [
               {
                 label: 'Total',

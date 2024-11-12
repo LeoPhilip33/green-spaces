@@ -3,6 +3,7 @@ import axios from 'axios';
 import StatisticsComponent from '@/components/StatisticsComponent.vue';
 import CardComponent from '@/components/CardComponent.vue';
 import LoaderComponent from '@/components/LoaderComponent.vue';
+import { GreenSpaces } from '@/enums/GreenSpaces';
 
 export default {
   name: 'StatisticsView',
@@ -32,16 +33,16 @@ export default {
   computed: {
     formattedStatistics() {
       return {
-        'Parcs': this.statistics.totalParks,
-        'Jardins': this.statistics.totalGardens,
-        'Aires de jeux': this.statistics.totalPlaygrounds,
-        'Terrains': this.statistics.totalPitches,
-        'Forêts': this.statistics.totalForests,
-        'Bois': this.statistics.totalWoods,
-        'Arbres': this.statistics.totalTrees,
-        'Arbres à feuilles caduques': `${this.statistics.percentageDeciduous}%`,
-        'Arbres à feuilles larges': `${this.statistics.percentageBroadleaved}%`,
-        'Arbres à feuilles d\'aiguilles': `${this.statistics.percentageNeedleleaved}%`,
+        [GreenSpaces.Parks]: this.statistics.totalParks,
+        [GreenSpaces.Gardens]: this.statistics.totalGardens,
+        [GreenSpaces.Playgrounds]: this.statistics.totalPlaygrounds,
+        [GreenSpaces.Pitches]: this.statistics.totalPitches,
+        [GreenSpaces.Forests]: this.statistics.totalForests,
+        [GreenSpaces.Woods]: this.statistics.totalWoods,
+        [GreenSpaces.Trees]: this.statistics.totalTrees,
+        [GreenSpaces.DeciduousTrees]: `${this.statistics.percentageDeciduous} %`,
+        [GreenSpaces.BroadleavedTrees]: `${this.statistics.percentageBroadleaved} %`,
+        [GreenSpaces.NeedleleavedTrees]: `${this.statistics.percentageNeedleleaved} %`,
       };
     },
   },
@@ -57,7 +58,6 @@ export default {
           axios.get('./geojson/trees_paris.geojson'),
         ]);
         this.geojsonData = responses.map(response => response.data);
-        console.log(this.geojsonData[0]);
         this.calculateStatistics();
         this.loading = false;
       } catch (error) {
