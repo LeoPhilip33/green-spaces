@@ -1,39 +1,74 @@
-# green-spaces
+# Green Spaces Project
 
-This template should help get you started developing with Vue 3 in Vite.
+## Description
 
-## Recommended IDE Setup
+This project visualizes green spaces in Paris using Vue.js and Mapbox GL. It includes various filters to display different types of green spaces and trees, as well as a heatmap for heat zones.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Project Structure
 
-## Type Support for `.vue` Imports in TS
+- **StatisticsView.vue**: Displays statistics about green spaces and trees.
+- **HomeView.vue**: Displays an interactive map with filters to visualize different types of green spaces and trees.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Installation
 
-## Customize configuration
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/yourusername/green-spaces.git
+   ```
+2. Navigate to the project directory:
+   ```sh
+   cd green-spaces
+   ```
+3. Install dependencies:
+   ```sh
+   npm install
+   ```
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Usage
 
-## Project Setup
+1. Start the development server:
+   ```sh
+   npm run dev
+   ```
+2. Open your browser and navigate to `http://localhost:5173`.
 
-```sh
-npm install
+## Components
+
+### StatisticsView.vue
+
+- **StatisticsComponent**: Displays detailed statistics.
+- **CardComponent**: Displays individual statistics in card format.
+- **LoaderComponent**: Displays a loading spinner while data is being fetched.
+
+### HomeView.vue
+
+- **FilterComponent**: Provides filters to toggle different types of green spaces and trees.
+- **Loader**: Displays a loading spinner while data is being fetched.
+
+## Data Sources
+
+In the `public/geojson` folder, download and add the GeoJSON files from the following link (too large to be hosted on GitHub): [Download GeoJSON files](https://drive.google.com/file/d/1mdyQqHh7qmUXqjX2bxKiA4ADdvA74raK/view?usp=sharing)
+
+- **Green Spaces**: `./geojson/green_spaces_paris.geojson`
+- **Trees**: `./geojson/trees_paris.geojson`
+- **Heat Zones**: `./geojson/lst_paris_2022.geojson`
+
+## Mapbox
+
+This project uses Mapbox GL for map rendering. Make sure to set your Mapbox access token in `HomeView.vue`:
+
+```js
+mapboxgl.accessToken = 'your_mapbox_access_token'
 ```
 
-### Compile and Hot-Reload for Development
+## License
 
-```sh
-npm run dev
-```
+This project is licensed under the MIT License.
 
-### Type-Check, Compile and Minify for Production
+## Contributing
 
-```sh
-npm run build
-```
+Contributions are welcome! Please open an issue or submit a pull request.
 
-### Lint with [ESLint](https://eslint.org/)
+## Contact
 
-```sh
-npm run lint
-```
+For any inquiries, please contact philipleopro@gmail.com.
