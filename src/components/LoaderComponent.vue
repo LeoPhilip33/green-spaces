@@ -23,12 +23,12 @@
   };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .container-loader {
   background-color: #00000036;
 
   .spinner {
-    color: #7ba954;
+    color: $green;
   }
 }
 </style>

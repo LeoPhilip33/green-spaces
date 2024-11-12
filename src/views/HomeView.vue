@@ -71,11 +71,6 @@ export default {
         this.loading = false;
       });
     },
-    resetFilters() {
-      for (const key in this.filters) {
-        this.filters[key] = false;
-      }
-    },
     updateMapLayers() {
       if (!this.geojsonData) return;
 

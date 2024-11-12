@@ -25,13 +25,13 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .card {
   transition: transform 0.2s, box-shadow 0.2s;
 
   &:hover {
     transform: scale(1.01);
-    box-shadow: 0 0px 3px #7ba954;
+    box-shadow: 0 0px 3px $green;
   }
 }
 </style>

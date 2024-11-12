@@ -46,13 +46,13 @@ export default {
   </button>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container-filter {
   transition: 0.2s;
   height: fit-content;
 
   i {
-    color: #7ba954;
+    color: $green;
   }
 
   &:hover {
@@ -61,10 +61,10 @@ export default {
   }
 
   &.active {
-    color: white;
+    color: $white;
 
     i {
-      color: white;
+      color: $white;
     }
   }
 

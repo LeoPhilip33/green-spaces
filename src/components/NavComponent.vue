@@ -26,31 +26,27 @@ export default {
   </nav>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 nav {
   width: 7rem;
-  border-right: 0.1rem solid #e6e6e6;
+  border-right: 0.1rem solid $white;
 
   img {
     width: inherit;
   }
-}
 
-.navbar-brand img {
-  width: inherit;
-}
+  small {
+    font-size: 0.8em;
+  }
 
-small {
-  font-size: 0.8em;
+  a {
+    color: $black;
+    text-decoration: none;
+  }
 }
 
 .router-link-active {
   font-weight: bold;
-  color: #7ba954;
-}
-
-a {
-  color: black;
-  text-decoration: none;
+  color: $green;
 }
 </style>
