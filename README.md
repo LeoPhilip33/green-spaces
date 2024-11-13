@@ -1,19 +1,22 @@
 # Green Spaces Project
 
+![image](https://github.com/user-attachments/assets/fd08d673-c79a-48a1-b420-bfa644e1a289)
+![image](https://github.com/user-attachments/assets/cd155b2e-f298-4606-b469-4831238baf62)
+
 ## Description
 
 This project visualizes green spaces in Paris using Vue.js and Mapbox GL. It includes various filters to display different types of green spaces and trees, as well as a heatmap for heat zones.
 
 ## Project Structure
 
-- **StatisticsView.vue**: Displays statistics about green spaces and trees.
 - **HomeView.vue**: Displays an interactive map with filters to visualize different types of green spaces and trees.
+- **StatisticsView.vue**: Displays statistics about green spaces and trees.
 
 ## Installation
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/green-spaces.git
+   git clone https://github.com/LeoPhilip33/green-spaces
    ```
 2. Navigate to the project directory:
    ```sh
@@ -48,16 +51,16 @@ You can also run the project using Docker. Follow these steps:
 
 ## Components
 
+### HomeView.vue
+
+- **FilterComponent**: Provides filters to toggle different types of green spaces and trees.
+- **Loader**: Displays a loading spinner while data is being fetched.
+
 ### StatisticsView.vue
 
 - **StatisticsComponent**: Displays detailed statistics.
 - **CardComponent**: Displays individual statistics in card format.
 - **LoaderComponent**: Displays a loading spinner while data is being fetched.
-
-### HomeView.vue
-
-- **FilterComponent**: Provides filters to toggle different types of green spaces and trees.
-- **Loader**: Displays a loading spinner while data is being fetched.
 
 ## Data Sources
 
@@ -78,10 +81,6 @@ mapboxgl.accessToken = 'your_mapbox_access_token'
 ## License
 
 This project is licensed under the MIT License.
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
 
 ## Contact
 
