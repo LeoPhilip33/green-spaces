@@ -1,11 +1,11 @@
 # Green Spaces Project
 
-![image](https://github.com/user-attachments/assets/fd08d673-c79a-48a1-b420-bfa644e1a289)
-![image](https://github.com/user-attachments/assets/cd155b2e-f298-4606-b469-4831238baf62)
-
 ## Description
 
 This project visualizes green spaces in Paris using Vue.js and Mapbox GL. It includes various filters to display different types of green spaces and trees, as well as a heatmap for heat zones.
+
+![image](https://github.com/user-attachments/assets/fd08d673-c79a-48a1-b420-bfa644e1a289)
+![image](https://github.com/user-attachments/assets/cd155b2e-f298-4606-b469-4831238baf62)
 
 ## Project Structure
 
