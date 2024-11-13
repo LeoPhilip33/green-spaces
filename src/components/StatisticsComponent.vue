@@ -2,17 +2,22 @@
 import { Chart, registerables } from 'chart.js';
 import { COLORS } from '@/utils/colors';
 import { GreenSpaces } from '@/enums/GreenSpaces';
+import { defineComponent, type PropType } from 'vue';
+import type { Statistics } from '../types/Statistics';
 
 Chart.register(...registerables);
 
-export default {
+export default defineComponent({
   name: 'StatisticsComponent',
   props: {
-    statistics: Object,
+    statistics: {
+      type: Object as PropType<Statistics>,
+      required: true,
+    },
   },
   data() {
     return {
-      chart: null,
+      chart: null as Chart<"doughnut", number[], string> | null,
     };
   },
   mounted() {
@@ -32,7 +37,7 @@ export default {
   methods: {
     renderChart() {
       this.$nextTick(() => {
-        const ctx = this.$refs.statisticsChart?.getContext('2d');
+        const ctx = (this.$refs.statisticsChart as HTMLCanvasElement).getContext('2d');
         if (!ctx) {
           console.error('Canvas context not found');
           return;
@@ -81,7 +86,7 @@ export default {
       });
     },
   },
-};
+});
 </script>
 
 <template>

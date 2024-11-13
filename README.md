@@ -32,6 +32,20 @@ This project visualizes green spaces in Paris using Vue.js and Mapbox GL. It inc
    ```
 2. Open your browser and navigate to `http://localhost:5173`.
 
+## Docker
+
+You can also run the project using Docker. Follow these steps:
+
+1. Build the Docker image:
+   ```sh
+   docker build -t green-spaces .
+   ```
+2. Run the Docker container:
+   ```sh
+   docker run -p 5000:5000 green-spaces
+   ```
+3. Open your browser and navigate to `http://localhost:5000`.
+
 ## Components
 
 ### StatisticsView.vue

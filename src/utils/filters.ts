@@ -1,4 +1,4 @@
-export const FILTERS = [
+export const GREEN_SPACE_FILTERS = [
   { key: 'deciduous', property: 'leaf_cycle', value: 'deciduous' },
   { key: 'broadleaved', property: 'leaf_type', value: 'broadleaved' },
   { key: 'needleleaved', property: 'leaf_type', value: 'needleleaved' },

@@ -3,18 +3,19 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 import FilterComponent from '@/components/FilterComponent.vue';
+import LoaderComponent from '@/components/LoaderComponent.vue';
 import { COLORS } from '@/utils/colors';
-import { FILTERS } from '@/utils/filters';
-import simplify from 'simplify-js';
-import Loader from '@/components/LoaderComponent.vue';
-import Filters from '@/utils/filters';
+import { simplifyGeoJSON } from '@/utils/geojsonUtils';
+import { GREEN_SPACE_FILTERS } from '@/utils/filters';
 import { GreenSpaces } from '@/enums/GreenSpaces';
+import { initializeMap, removeExistingLayersAndSources, showPopup } from '@/utils/mapUtils';
+import { MapLayers, MapSources } from '@/enums/map.enums';
 
 export default {
   name: 'HomeView',
   components: {
     FilterComponent,
-    Loader
+    LoaderComponent
   },
   data() {
     return {
@@ -32,9 +33,9 @@ export default {
         broadleaved: false,
         needleleaved: false,
         heatzones: false,
-      } as Filters,
+      },
       colors: COLORS,
-      geojsonData: null as GeoJSON.FeatureCollection | null,
+      geojsonData: null as Array<GeoJSON.FeatureCollection> | null,
       map: null as mapboxgl.Map | null,
     };
   },
@@ -58,12 +59,16 @@ export default {
   },
   methods: {
     initializeMap() {
-      this.map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/philipleo/cm37lqs4w00gd01pd29tg4txb',
-        center: [2.3522, 48.8566],
-        zoom: 11,
-      });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      this.map = initializeMap(
+        'map',
+        'mapbox://styles/philipleo/cm37lqs4w00gd01pd29tg4txb',
+        [2.3522, 48.8566],
+        11
+      );
+
+      if (!this.map) return;
       this.map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
       this.map.on('load', () => {
         this.updateMapLayers();
@@ -72,9 +77,31 @@ export default {
       });
     },
     updateMapLayers() {
-      if (!this.geojsonData) return;
+      if (!this.geojsonData || !this.map) return;
 
-      this.removeExistingLayersAndSources();
+      removeExistingLayersAndSources(this.map,
+        [
+          MapLayers.ParksLayer,
+          MapLayers.GardensLayer,
+          MapLayers.PlaygroundsLayer,
+          MapLayers.PitchesLayer,
+          MapLayers.ForestsLayer,
+          MapLayers.WoodsLayer,
+          MapLayers.Clusters,
+          MapLayers.ClusterCount,
+          MapLayers.UnclusteredPoint,
+          MapLayers.HeatzonesLayer
+        ],
+        [
+          MapSources.ParksSource,
+          MapSources.GardensSource,
+          MapSources.PlaygroundsSource,
+          MapSources.PitchesSource,
+          MapSources.ForestsSource,
+          MapSources.WoodsSource,
+          MapSources.TreesSource,
+          MapSources.HeatzonesSource
+        ]);
       if (this.filters.heatzones) {
         this.addHeatmapLayer();
       }
@@ -83,38 +110,26 @@ export default {
         this.addTreeLayers();
       }
     },
-    removeExistingLayersAndSources() {
-      const layers = ['parksLayer', 'gardensLayer', 'playgroundsLayer', 'pitchesLayer', 'forestsLayer', 'woodsLayer', 'clusters', 'cluster-count', 'unclustered-point', 'heatzonesLayer'];
-      const sources = ['parksSource', 'gardensSource', 'playgroundsSource', 'pitchesSource', 'forestsSource', 'woodsSource', 'treesSource', 'heatzonesSource'];
-      layers.forEach(layer => {
-        if (this.map.getLayer(layer)) {
-          this.map.removeLayer(layer);
-        }
-      });
-      sources.forEach(source => {
-        if (this.map.getSource(source)) {
-          this.map.removeSource(source);
-        }
-      });
-    },
     addTreeLayers() {
+      if (!this.geojsonData) return;
+
       let treesData = this.geojsonData[1].features;
       if (this.filters.deciduous) {
-        treesData = treesData.filter(feature => feature.properties.leaf_cycle === 'deciduous');
+        treesData = treesData.filter((feature) => feature.properties && feature.properties.leaf_cycle === 'deciduous');
       }
       if (this.filters.broadleaved) {
-        treesData = treesData.filter(feature => feature.properties.leaf_type === 'broadleaved');
+        treesData = treesData.filter((feature) => feature.properties && feature.properties.leaf_type === 'broadleaved');
       }
       if (this.filters.needleleaved) {
-        treesData = treesData.filter(feature => feature.properties.leaf_type === 'needleleaved');
+        treesData = treesData.filter((feature) => feature.properties && feature.properties.leaf_type === 'needleleaved');
       }
-      if (this.map.getSource('treesSource')) {
-        this.map.getSource('treesSource').setData({
+      if (this.map?.getSource(MapSources.TreesSource)) {
+        (this.map.getSource(MapSources.TreesSource) as mapboxgl.GeoJSONSource)?.setData({
           type: 'FeatureCollection',
           features: treesData,
         });
       } else {
-        this.map.addSource('treesSource', {
+        this.map?.addSource(MapSources.TreesSource, {
           type: 'geojson',
           data: {
             type: 'FeatureCollection',
@@ -122,14 +137,14 @@ export default {
           },
           cluster: true,
           clusterMaxZoom: 14,
-          clusterRadius: 50,
+          clusterRadius: 100,
         });
       }
-      if (!this.map.getLayer('clusters')) {
-        this.map.addLayer({
-          id: 'clusters',
+      if (!this.map?.getLayer(MapLayers.Clusters)) {
+        this.map?.addLayer({
+          id: MapLayers.Clusters,
           type: 'circle',
-          source: 'treesSource',
+          source: MapSources.TreesSource,
           filter: ['has', 'point_count'],
           paint: {
             'circle-color': this.colors.trees,
@@ -145,24 +160,26 @@ export default {
           },
         });
       }
-      if (!this.map.getLayer('cluster-count')) {
-        this.map.addLayer({
-          id: 'cluster-count',
+      if (!this.map?.getLayer(MapLayers.ClusterCount)) {
+        this.map?.addLayer({
+          id: MapLayers.ClusterCount,
           type: 'symbol',
-          source: 'treesSource',
+          source: MapSources.TreesSource,
           filter: ['has', 'point_count'],
           layout: {
             'text-field': '{point_count_abbreviated}',
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
             'text-size': 12,
+          },
+          paint: {
+            'text-color': '#ffffff',
           },
         });
       }
-      if (!this.map.getLayer('unclustered-point')) {
-        this.map.addLayer({
-          id: 'unclustered-point',
+      if (!this.map?.getLayer(MapLayers.UnclusteredPoint)) {
+        this.map?.addLayer({
+          id: MapLayers.UnclusteredPoint,
           type: 'circle',
-          source: 'treesSource',
+          source: MapSources.TreesSource,
           filter: ['!', ['has', 'point_count']],
           paint: {
             'circle-color': this.colors.trees,
@@ -172,20 +189,28 @@ export default {
       }
     },
     addHeatmapLayer() {
-      const simplifiedData = this.simplifyGeoJSON(this.geojsonData[2]);
-      if (this.map.getSource('heatzonesSource')) {
-        this.map.getSource('heatzonesSource').setData(simplifiedData);
+      if (!this.geojsonData) return;
+
+      const simplifiedData = simplifyGeoJSON(this.geojsonData[2]);
+      if (this.map?.getSource(MapSources.HeatzonesSource)) {
+        (this.map.getSource(MapSources.HeatzonesSource) as mapboxgl.GeoJSONSource)?.setData({
+          type: 'FeatureCollection',
+          features: simplifiedData.features
+        });
       } else {
-        this.map.addSource('heatzonesSource', {
+        this.map?.addSource(MapSources.HeatzonesSource, {
           type: 'geojson',
-          data: simplifiedData,
+          data: {
+            type: 'FeatureCollection',
+            features: simplifiedData.features
+          },
         });
       }
-      if (!this.map.getLayer('heatzonesLayer')) {
-        this.map.addLayer({
-          id: 'heatzonesLayer',
+      if (!this.map?.getLayer(MapLayers.HeatzonesLayer)) {
+        this.map?.addLayer({
+          id: MapLayers.HeatzonesLayer,
           type: 'heatmap',
-          source: 'heatzonesSource',
+          source: MapSources.HeatzonesSource,
           paint: {
             'heatmap-color': [
               'interpolate',
@@ -199,40 +224,32 @@ export default {
         });
       }
     },
-    simplifyGeoJSON(data) {
-      return {
-        type: 'FeatureCollection',
-        features: data.features.map(feature => {
-          if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
-            feature.geometry.coordinates = feature.geometry.coordinates.map(ring => simplify(ring, 0.01, true));
-          }
-          return feature;
-        })
-      };
-    },
     addFilteredLayers() {
-      FILTERS.forEach(filter => {
-        if (this.filters[filter.key]) {
+      GREEN_SPACE_FILTERS.forEach(filter => {
+        if (this.filters[filter.key as keyof typeof this.filters]) {
           const data = {
             type: 'FeatureCollection',
-            features: this.geojsonData[0].features.filter(feature => feature.properties[filter.property] === filter.value)
+            features: (this.geojsonData && this.geojsonData[0] as GeoJSON.FeatureCollection)?.features.filter((feature) => feature.properties && feature.properties[filter.property] === filter.value) || []
           };
-          if (this.map.getSource(`${filter.key}Source`)) {
-            this.map.getSource(`${filter.key}Source`).setData(data);
+          if (this.map?.getSource(`${filter.key}Source`)) {
+            (this.map?.getSource(`${filter.key}Source`) as mapboxgl.GeoJSONSource).setData({
+              type: 'FeatureCollection',
+              features: data.features
+            });
           } else {
-            this.map.addSource(`${filter.key}Source`, {
+            this.map?.addSource(`${filter.key}Source`, {
               type: 'geojson',
-              data: data,
+              data: data as GeoJSON.FeatureCollection,
             });
           }
-          if (!this.map.getLayer(`${filter.key}Layer`)) {
-            this.map.addLayer({
+          if (!this.map?.getLayer(`${filter.key}Layer`)) {
+            this.map?.addLayer({
               id: `${filter.key}Layer`,
               type: 'fill',
               source: `${filter.key}Source`,
               layout: {},
               paint: {
-                'fill-color': this.colors[filter.key],
+                'fill-color': this.colors[filter.key as keyof typeof this.colors],
                 'fill-opacity': 0.5,
               },
             });
@@ -241,45 +258,29 @@ export default {
       });
     },
     addLayerClickHandlers() {
-      const layers = ['parksLayer', 'gardensLayer', 'playgroundsLayer', 'pitchesLayer', 'forestsLayer', 'woodsLayer', 'unclustered-point'];
+      const layers = [
+        MapLayers.ParksLayer,
+        MapLayers.GardensLayer,
+        MapLayers.PlaygroundsLayer,
+        MapLayers.PitchesLayer,
+        MapLayers.ForestsLayer,
+        MapLayers.WoodsLayer,
+        MapLayers.UnclusteredPoint
+      ];
       layers.forEach(layer => {
-        this.map.on('click', layer, (e) => {
-          this.showPopup(e);
+        this.map?.on('click', layer, (e) => {
+          if (!this.map) return;
+          showPopup(this.map, e);
         });
       });
     },
-    showPopup(e) {
-      const coordinates = e.features[0].geometry.coordinates;
-      const properties = e.features[0].properties;
-
-      let lngLat;
-      if (Array.isArray(coordinates[0])) {
-        lngLat = coordinates[0][0];
-      } else {
-        lngLat = coordinates;
-      }
-
-      if (lngLat.length === 2 && !isNaN(lngLat[0]) && !isNaN(lngLat[1])) {
-        let description = '<strong>Details:</strong><br>';
-        for (const key in properties) {
-          description += `${key}: ${properties[key]}<br>`;
-        }
-
-        new mapboxgl.Popup()
-          .setLngLat(lngLat)
-          .setHTML(description)
-          .addTo(this.map);
-      } else {
-        console.error('Invalid coordinates:', lngLat);
-      }
-    }
   }
 };
 </script>
 
 <template>
   <div class="container-home position-relative">
-    <Loader class="position-absolute z-3" :loading="loading" />
+    <LoaderComponent class="position-absolute z-3" :loading="loading" />
     <div class="position-relative">
       <div class="position-absolute z-1 top-0 start-0 p-3">
         <div class="d-flex flex-wrap gap-2">

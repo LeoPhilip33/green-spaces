@@ -4,6 +4,9 @@ import StatisticsComponent from '@/components/StatisticsComponent.vue';
 import CardComponent from '@/components/CardComponent.vue';
 import LoaderComponent from '@/components/LoaderComponent.vue';
 import { GreenSpaces } from '@/enums/GreenSpaces';
+import type { Statistics } from '@/types/Statistics';
+import type { FeatureCollection, Geometry } from 'geojson';
+import type { GeoJsonProperties, GeoJsonResponse, GeoJsonFeature } from '@/types/GeoJson';
 
 export default {
   name: 'StatisticsView',
@@ -15,7 +18,7 @@ export default {
   data() {
     return {
       loading: false as boolean,
-      geojsonData: null as GeoJSON.FeatureCollection | null,
+      geojsonData: null as FeatureCollection<Geometry, GeoJsonProperties>[] | null,
       statistics: {
         totalParks: 0,
         totalGardens: 0,
@@ -44,16 +47,16 @@ export default {
         [GreenSpaces.BroadleavedTrees]: `${this.statistics.percentageBroadleaved} %`,
         [GreenSpaces.NeedleleavedTrees]: `${this.statistics.percentageNeedleleaved} %`,
       };
-    },
+    }
   },
   mounted() {
     this.loading = true;
     this.loadGeojsonData();
   },
   methods: {
-    async loadGeojsonData() {
+    async loadGeojsonData(): Promise<void> {
       try {
-        const responses = await Promise.all([
+        const responses: [GeoJsonResponse, GeoJsonResponse] = await Promise.all([
           axios.get('./geojson/green_spaces_paris.geojson'),
           axios.get('./geojson/trees_paris.geojson'),
         ]);
@@ -65,21 +68,21 @@ export default {
         this.loading = false;
       }
     },
-    calculateStatistics() {
+    calculateStatistics(): void {
       if (!this.geojsonData) {
         return;
       }
 
-      const parks = this.geojsonData[0].features.filter(feature => feature.properties.leisure === 'park').length;
-      const gardens = this.geojsonData[0].features.filter(feature => feature.properties.leisure === 'garden').length;
-      const playgrounds = this.geojsonData[0].features.filter(feature => feature.properties.leisure === 'playground').length;
-      const pitches = this.geojsonData[0].features.filter(feature => feature.properties.leisure === 'pitch').length;
-      const forests = this.geojsonData[0].features.filter(feature => feature.properties.landuse === 'forest').length;
-      const woods = this.geojsonData[0].features.filter(feature => feature.properties.natural === 'wood').length;
+      const parks = this.geojsonData[0].features.filter((feature: GeoJsonFeature) => feature.properties.leisure === 'park').length;
+      const gardens = this.geojsonData[0].features.filter((feature: GeoJsonFeature) => feature.properties.leisure === 'garden').length;
+      const playgrounds = this.geojsonData[0].features.filter((feature: GeoJsonFeature) => feature.properties.leisure === 'playground').length;
+      const pitches = this.geojsonData[0].features.filter((feature: GeoJsonFeature) => feature.properties.leisure === 'pitch').length;
+      const forests = this.geojsonData[0].features.filter((feature: GeoJsonFeature) => feature.properties.landuse === 'forest').length;
+      const woods = this.geojsonData[0].features.filter((feature: GeoJsonFeature) => feature.properties.natural === 'wood').length;
       const trees = this.geojsonData[1].features.length;
-      const deciduousTrees = this.geojsonData[1].features.filter(feature => feature.properties.leaf_cycle === 'deciduous').length;
-      const broadleavedTrees = this.geojsonData[1].features.filter(feature => feature.properties.leaf_type === 'broadleaved').length;
-      const needleleavedTrees = this.geojsonData[1].features.filter(feature => feature.properties.leaf_type === 'needleleaved').length;
+      const deciduousTrees = this.geojsonData[1].features.filter((feature: GeoJsonFeature) => feature.properties.leaf_cycle === 'deciduous').length;
+      const broadleavedTrees = this.geojsonData[1].features.filter((feature: GeoJsonFeature) => feature.properties.leaf_type === 'broadleaved').length;
+      const needleleavedTrees = this.geojsonData[1].features.filter((feature: GeoJsonFeature) => feature.properties.leaf_type === 'needleleaved').length;
 
       this.statistics.totalParks = parks;
       this.statistics.totalGardens = gardens;
@@ -88,9 +91,9 @@ export default {
       this.statistics.totalForests = forests;
       this.statistics.totalWoods = woods;
       this.statistics.totalTrees = trees;
-      this.statistics.percentageDeciduous = ((deciduousTrees / trees) * 100).toFixed(2);
-      this.statistics.percentageBroadleaved = ((broadleavedTrees / trees) * 100).toFixed(2);
-      this.statistics.percentageNeedleleaved = ((needleleavedTrees / trees) * 100).toFixed(2);
+      this.statistics.percentageDeciduous = parseFloat(((deciduousTrees / trees) * 100).toFixed(2));
+      this.statistics.percentageBroadleaved = parseFloat(((broadleavedTrees / trees) * 100).toFixed(2));
+      this.statistics.percentageNeedleleaved = parseFloat(((needleleavedTrees / trees) * 100).toFixed(2));
     },
   },
 };

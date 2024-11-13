@@ -1,4 +1,15 @@
 <script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: 'LoaderComponent',
+  props: {
+    loading: {
+      type: Boolean,
+      required: true
+    }
+  }
+});
 </script>
 
 <template>
@@ -10,18 +21,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-  export default {
-    name: 'LoaderComponent',
-    props: {
-      loading: {
-        type: Boolean,
-        required: true
-      }
-    }
-  };
-</script>
 
 <style lang="scss" scoped>
 .container-loader {
